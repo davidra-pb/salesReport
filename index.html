@@ -1,0 +1,307 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sales Leaderboard</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+        <style>
+            :root {
+                --bg-color: #0f172a; --card-bg: #1e293b; --text-primary: #f8fafc; --text-secondary: #94a3b8;
+                --accent-gold: #f59e0b; --success-green: #10b981; --highlight-blue: #3b82f6; --purple: #8b5cf6;
+            }
+            body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-primary); margin: 0; padding: 40px; display: flex; flex-direction: column; align-items: center; }
+
+            .header { text-align: center; margin-bottom: 20px; animation: fadeIn 0.8s ease-in; }
+            h1 { font-size: 2.5rem; margin: 0; text-transform: uppercase; letter-spacing: 2px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            .subtitle { color: var(--text-secondary); margin-top: 5px; font-size: 0.9rem; }
+
+            /* FILTERS */
+            .filter-container { margin-bottom: 30px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; animation: fadeIn 0.8s ease-in; }
+            .filter-label { color: var(--text-secondary); font-weight: 600; margin-right: 10px; align-self: center; }
+            .group-pill {
+                background: #334155; color: var(--text-secondary); padding: 8px 16px; border-radius: 20px; 
+                cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; border: 1px solid transparent;
+                user-select: none;
+            }
+            .group-pill:hover { background: #475569; }
+            .group-pill.active { background: var(--highlight-blue); color: white; box-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
+
+            /* STATS GRID */
+            .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; width: 100%; max-width: 900px; margin-bottom: 40px; }
+            .stat-card { background: var(--card-bg); padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden; transition: transform 0.2s; }
+            .stat-card:hover { transform: translateY(-2px); }
+            .stat-value { font-size: 2.2rem; font-weight: 800; color: var(--text-primary); }
+            .stat-label { color: var(--text-secondary); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; margin-top: 5px; }
+
+            .stat-card.total { border-bottom: 4px solid var(--purple); }
+            .stat-card.mtd { border-bottom: 4px solid var(--highlight-blue); }
+            .stat-card.wtd { border-bottom: 4px solid var(--success-green); }
+            .stat-card.yest { border-bottom: 4px solid var(--accent-gold); }
+
+            /* PODIUM */
+            .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 15px; margin-bottom: 50px; height: 260px; min-width: 450px; }
+            .podium-step { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; width: 140px; text-align: center; opacity: 0; animation: popUp 0.5s forwards; }
+            .avatar-circle { width: 50px; height: 50px; background: #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; border: 3px solid rgba(255,255,255,0.1); box-shadow: 0 0 10px rgba(0,0,0,0.3); }
+            .podium-bar { width: 100%; border-radius: 10px 10px 0 0; display: flex; flex-direction: column; justify-content: center; color: #0f172a; font-weight: bold; transition: height 0.5s ease; }
+
+            .rank-1 .podium-bar { height: 0; background: linear-gradient(180deg, #fcd34d, #f59e0b); box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
+            .rank-1 .avatar-circle { border-color: #fcd34d; color: #fcd34d; background: rgba(252, 211, 77, 0.1); }
+            .rank-2 .podium-bar { height: 0; background: linear-gradient(180deg, #e2e8f0, #94a3b8); }
+            .rank-3 .podium-bar { height: 0; background: linear-gradient(180deg, #fdba74, #b45309); }
+            .podium-name { margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+            .podium-score { font-size: 1.8rem; font-weight: 800; }
+
+            /* TABLE */
+            .table-container { width: 100%; max-width: 900px; background: var(--card-bg); border-radius: 16px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+            table { width: 100%; border-collapse: collapse; }
+            th { background: #334155; color: var(--text-secondary); padding: 16px 20px; text-align: left; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; }
+            th:hover { background: #404b5f; color: white; }
+            td { padding: 14px 20px; border-bottom: 1px solid #334155; color: var(--text-primary); vertical-align: middle; }
+            tr:last-child td { border-bottom: none; }
+            tr:hover { background: #283548; }
+
+            .rank-col { width: 50px; text-align: center; color: var(--text-secondary); font-weight: bold; }
+            .agent-col { width: 35%; font-weight: 600; font-size: 1rem; }
+            .group-tag { font-size: 0.7rem; background: #334155; color: #94a3b8; padding: 2px 6px; border-radius: 4px; margin-left: 8px; font-weight: normal; vertical-align: middle; }
+            .badges { font-size: 1.1rem; margin-left: 5px; }
+            .bar-container { width: 100%; background: #334155; height: 5px; border-radius: 3px; margin-top: 6px; overflow: hidden; }
+            .bar-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #8b5cf6); border-radius: 3px; width: 0; transition: width 1s ease; }
+            .score-main { color: var(--highlight-blue); font-weight: 800; font-size: 1.1rem; }
+
+            @keyframes popUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+            .footer { margin-top: 30px; color: #475569; font-size: 0.75rem; text-align: center; }
+            .hidden { display: none; }
+        </style>
+    </head>
+    <body>
+
+        <div class="header">
+            <h1>🏆 Sales Champions</h1>
+            <div class="subtitle">Performance Dashboard</div>
+        </div>
+
+        <div class="filter-container" id="filterContainer">
+            <span class="filter-label">Filter Groups:</span>
+            </div>
+
+        <div class="stats-grid">
+            <div class="stat-card total">
+                <div class="stat-value" id="val-total">0</div>
+                <div class="stat-label">Total in Report</div>
+            </div>
+            <div class="stat-card mtd">
+                <div class="stat-value" id="val-mtd">0</div>
+                <div class="stat-label">Month to Date</div>
+            </div>
+            <div class="stat-card wtd">
+                <div class="stat-value" id="val-wtd">0</div>
+                <div class="stat-label">This Week</div>
+            </div>
+            <div class="stat-card yest">
+                <div class="stat-value" id="val-yest">0</div>
+                <div class="stat-label">Yesterday</div>
+            </div>
+        </div>
+
+        <div class="podium-container" id="podiumContainer">
+            </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="rank-col">#</th>
+                        <th>Agent</th>
+                        <th>Yesterday</th>
+                        <th>This Week</th>
+                        <th>This Month</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="footer">Generated on 28/01/2026 15:00 | Source: Sales_Report_20260128_1156.xlsx</div>
+
+        <script>
+            // --- DATA INJECTION ---
+            const rawData = [{"agent": "\u05d9\u05e4\u05d4", "group": "\u05ea\u05de\u05d9\u05db\u05d4", "yest": 0, "wtd": 0, "mtd": 7, "total": 86}, {"agent": "\u05d3\u05e0\u05d9\u05d4", "group": "\u05ea\u05de\u05d9\u05db\u05d4", "yest": 0, "wtd": 1, "mtd": 7, "total": 187}, {"agent": "\u05d0\u05e8\u05d6", "group": "\u05d9\u05d0\u05e0\u05d2", "yest": 1, "wtd": 3, "mtd": 24, "total": 233}, {"agent": "\u05e0\u05d5\u05e2\u05d4", "group": "CS managers", "yest": 0, "wtd": 0, "mtd": 0, "total": 12}, {"agent": "\u05d0\u05dc\u05d5\u05df", "group": "CS managers", "yest": 0, "wtd": 1, "mtd": 8, "total": 105}, {"agent": "\u05d9\u05e2\u05e7\u05d1", "group": "\u05ea\u05de\u05d9\u05db\u05d4", "yest": 0, "wtd": 0, "mtd": 2, "total": 88}, {"agent": "\u05e2\u05e0\u05ea", "group": "\u05ea\u05de\u05d9\u05db\u05d4", "yest": 0, "wtd": 1, "mtd": 13, "total": 89}, {"agent": "\u05dc\u05d0\u05d4", "group": "\u05ea\u05de\u05d9\u05db\u05d4", "yest": 1, "wtd": 1, "mtd": 8, "total": 85}, {"agent": "Haya", "group": "CA", "yest": 0, "wtd": 0, "mtd": 0, "total": 4}, {"agent": "\u05de\u05e2\u05d9\u05df", "group": "\u05ea\u05de\u05d9\u05db\u05d4", "yest": 0, "wtd": 0, "mtd": 1, "total": 51}, {"agent": "\u05d9\u05e8\u05d3\u05df", "group": "\u05ea\u05de\u05d9\u05db\u05d4", "yest": 0, "wtd": 0, "mtd": 0, "total": 8}, {"agent": "Erez", "group": "\u05ea\u05de\u05d9\u05db\u05d4", "yest": 0, "wtd": 0, "mtd": 2, "total": 6}, {"agent": "Netanel", "group": "Operation", "yest": 0, "wtd": 0, "mtd": 0, "total": 2}, {"agent": "Yair", "group": "Operation", "yest": 0, "wtd": 0, "mtd": 0, "total": 2}, {"agent": "Duaa", "group": "CA", "yest": 0, "wtd": 0, "mtd": 0, "total": 5}, {"agent": "\u05e2\u05d3\u05d9", "group": "CA", "yest": 0, "wtd": 0, "mtd": 0, "total": 1}, {"agent": "\u05d0\u05dc\u05e2\u05d3", "group": "\u05ea\u05de\u05d9\u05db\u05d4", "yest": 0, "wtd": 0, "mtd": 0, "total": 1}, {"agent": "\u05d0\u05d5\u05e8\u05d5\u05df", "group": "\u05e4\u05d9\u05ea\u05d5\u05d7", "yest": 0, "wtd": 0, "mtd": 0, "total": 3}, {"agent": "Nurit", "group": "Operation", "yest": 0, "wtd": 0, "mtd": 0, "total": 1}, {"agent": "\u05e0\u05d9\u05dc", "group": "\u05ea\u05de\u05d9\u05db\u05d4", "yest": 0, "wtd": 0, "mtd": 0, "total": 1}, {"agent": "\u05d3\u05e0\u05d9", "group": "\u05ea\u05de\u05d9\u05db\u05d4", "yest": 0, "wtd": 0, "mtd": 0, "total": 3}, {"agent": "David", "group": "\u05de\u05db\u05d9\u05e8\u05d5\u05ea", "yest": 0, "wtd": 0, "mtd": 0, "total": 6}];
+            const allGroups = ["CA", "CS managers", "Operation", "\u05d9\u05d0\u05e0\u05d2", "\u05de\u05db\u05d9\u05e8\u05d5\u05ea", "\u05e4\u05d9\u05ea\u05d5\u05d7", "\u05ea\u05de\u05d9\u05db\u05d4"];
+            const defaultGroupsList = ["\u05ea\u05de\u05d9\u05db\u05d4", "\u05de\u05db\u05d9\u05e8\u05d5\u05ea", "\u05d9\u05d0\u05e0\u05d2", "cs managers"];
+            const defaultSet = new Set(defaultGroupsList);
+
+            // --- INITIALIZE ACTIVE GROUPS ---
+            let activeGroups = new Set(allGroups.filter(g => defaultSet.has(g)));
+
+            // --- DOM ELEMENTS ---
+            const filterContainer = document.getElementById('filterContainer');
+            const tableBody = document.getElementById('tableBody');
+            const podiumContainer = document.getElementById('podiumContainer');
+
+            // --- INIT ---
+            function init() {
+                renderFilters();
+                updateDashboard();
+            }
+
+            // --- RENDER FILTERS ---
+            function renderFilters() {
+                allGroups.forEach(group => {
+                    const pill = document.createElement('div');
+                    if (activeGroups.has(group)) {
+                        pill.className = 'group-pill active';
+                    } else {
+                        pill.className = 'group-pill';
+                    }
+                    pill.innerText = group;
+                    pill.onclick = () => toggleGroup(group, pill);
+                    filterContainer.appendChild(pill);
+                });
+            }
+
+            function toggleGroup(group, el) {
+                if (activeGroups.has(group)) {
+                    activeGroups.delete(group);
+                    el.classList.remove('active');
+                } else {
+                    activeGroups.add(group);
+                    el.classList.add('active');
+                }
+                updateDashboard();
+            }
+
+            // --- CORE UPDATE LOGIC ---
+            function updateDashboard() {
+                // 1. Filter Data
+                const filteredData = rawData.filter(agent => activeGroups.has(agent.group));
+
+                // 2. Sort Data (Rank by Total Period DESC, then MTD DESC)
+                filteredData.sort((a, b) => {
+                    if (b.total !== a.total) return b.total - a.total;
+                    return b.mtd - a.mtd;
+                });
+
+                // 3. Calc Totals
+                const totals = { total: 0, mtd: 0, wtd: 0, yest: 0 };
+                let maxTotal = 0;
+
+                filteredData.forEach(d => {
+                    totals.total += d.total;
+                    totals.mtd += d.mtd;
+                    totals.wtd += d.wtd;
+                    totals.yest += d.yest;
+                    if (d.total > maxTotal) maxTotal = d.total;
+                });
+
+                // 4. Update Stat Cards with Animation
+                animateValue('val-total', totals.total);
+                animateValue('val-mtd', totals.mtd);
+                animateValue('val-wtd', totals.wtd);
+                animateValue('val-yest', totals.yest);
+
+                // 5. Update Podium (Top 3)
+                renderPodium(filteredData.slice(0, 3));
+
+                // 6. Update Table
+                renderTable(filteredData, maxTotal);
+            }
+
+            // --- RENDER FUNCTIONS ---
+            function renderPodium(top3) {
+                podiumContainer.innerHTML = '';
+
+                const createStep = (agent, rank) => {
+                    if (!agent) return `<div class="podium-step rank-${rank}" style="opacity:0"></div>`;
+                    const heights = { 1: 150, 2: 110, 3: 80 };
+                    const h = heights[rank];
+
+                    return `
+                        <div class="podium-step rank-${rank}" style="animation-delay: ${rank * 0.1}s">
+                            <div class="podium-name">${rank === 1 ? '👑 ' : ''}${agent.agent}</div>
+                            <div class="avatar-circle">${rank}</div>
+                            <div class="podium-bar" style="height: ${h}px">
+                                <span class="podium-score">${agent.total}</span>
+                            </div>
+                        </div>
+                    `;
+                };
+
+                let html = '';
+                html += createStep(top3[1], 2);
+                html += createStep(top3[0], 1);
+                html += createStep(top3[2], 3);
+                podiumContainer.innerHTML = html;
+            }
+
+            function renderTable(data, maxVal) {
+                tableBody.innerHTML = '';
+                if (data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px;">No agents found with selected filters.</td></tr>';
+                    return;
+                }
+
+                data.forEach((agent, index) => {
+                    const tr = document.createElement('tr');
+                    tr.style.animationDelay = (index * 0.05) + 's';
+
+                    const rank = index + 1;
+                    let badges = '';
+                    if (rank === 1) badges += '👑 ';
+                    if (agent.yest > 0) badges += '🔥';
+                    if (agent.wtd >= 5) badges += ' 🚀';
+
+                    const progress = maxVal > 0 ? (agent.total / maxVal) * 100 : 0;
+
+                    tr.innerHTML = `
+                        <td class="rank-col">${rank}</td>
+                        <td class="agent-col">
+                            ${agent.agent} 
+                            <span class="group-tag">${agent.group}</span>
+                            <span class="badges">${badges}</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="width: ${progress}%"></div>
+                            </div>
+                        </td>
+                        <td style="${agent.yest > 0 ? 'color: var(--success-green); font-weight:bold' : ''}">${agent.yest}</td>
+                        <td>${agent.wtd}</td>
+                        <td>${agent.mtd}</td>
+                        <td class="score-main">${agent.total}</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }
+
+            function animateValue(id, end) {
+                const obj = document.getElementById(id);
+                const start = parseInt(obj.innerHTML);
+                if (start === end) return;
+                const range = end - start;
+                const duration = 500;
+                let startTime = null;
+
+                function step(timestamp) {
+                    if (!startTime) startTime = timestamp;
+                    const progress = Math.min((timestamp - startTime) / duration, 1);
+                    obj.innerHTML = Math.floor(progress * range + start);
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    } else {
+                        obj.innerHTML = end;
+                    }
+                }
+                window.requestAnimationFrame(step);
+            }
+
+            // Run
+            init();
+
+        </script>
+    </body>
+    </html>
+    
