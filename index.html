@@ -66,18 +66,30 @@
             .modal-title { margin: 0; font-size: 1.2rem; font-weight: bold; }
             .close { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
             .close:hover { color: #fff; }
-            .modal-body { padding: 20px; max-height: 60vh; overflow-y: auto; }
+            .modal-body { padding: 20px; max-height: 60vh; overflow-y: auto; position: relative; }
 
             .detail-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-            .detail-table th { background: #334155; color: #ccc; padding: 10px; text-align: left; position: sticky; top: 0; }
+
+            /* --- FIXED HEADER STYLE --- */
+            .detail-table th { 
+                background: #252f45; /* Matches modal header/dark theme */
+                color: #ccc; 
+                padding: 10px; 
+                text-align: left; 
+                position: sticky; 
+                top: 0; 
+                z-index: 10; /* Ensures it stays on top */
+                box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+            }
+
             .detail-table td { padding: 10px; border-bottom: 1px solid #334155; }
             .detail-table tr:last-child td { border-bottom: none; }
 
             /* TICKET & COPY STYLES */
             .ticket-flex { display: flex; align-items: center; gap: 8px; }
             .ticket-num { font-family: monospace; color: var(--text-secondary); background: #0f172a; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; }
-            .copy-btn { cursor: pointer; color: var(--highlight-blue); display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 4px; transition: background 0.2s; }
-            .copy-btn:hover { background: rgba(59, 130, 246, 0.1); color: white; }
+            .copy-btn { cursor: pointer; color: var(--highlight-blue); display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 4px; transition: background 0.2s; width: 24px; height: 24px; }
+            .copy-btn:hover { background: rgba(59, 130, 246, 0.1); }
             .copy-btn svg { width: 16px; height: 16px; }
 
             @keyframes popUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -132,7 +144,7 @@
             </table>
         </div>
 
-        <div class="footer">Generated on 28/01/2026 18:41 | Source: Sales_Report_20260128_1610.xlsx</div>
+        <div class="footer">Generated on 28/01/2026 18:44 | Source: Sales_Report_20260128_1610.xlsx</div>
 
         <div id="detailModal" class="modal">
             <div class="modal-content">
@@ -231,10 +243,24 @@
                 renderTable(filteredData, maxTotal);
             }
 
-            // --- COPY FUNCTION ---
-            function copyToClipboard(text) {
+            // --- VISUAL COPY FEEDBACK ---
+            function copyToClipboard(text, btnElement) {
                 navigator.clipboard.writeText(text).then(() => {
-                    // Optional: Add visual feedback here
+                    // Save original SVG
+                    const originalContent = btnElement.innerHTML;
+
+                    // Show Checkmark
+                    btnElement.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>`;
+                    btnElement.style.color = "var(--success-green)"; // Green color
+
+                    // Revert after 1.5s
+                    setTimeout(() => {
+                        btnElement.innerHTML = originalContent;
+                        btnElement.style.color = ""; // Reset color
+                    }, 1500);
                 }).catch(err => {
                     console.error('Failed to copy: ', err);
                 });
@@ -275,16 +301,17 @@
 
                     let ticketDisplay = 'N/A';
                     if (s.ticket_id && s.ticket_id !== 'N/A') {
-                        // SVG for clipboard icon
+                        // Original Copy Icon SVG
                         const copyIcon = `
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
                         </svg>`;
 
+                        // Pass 'this' to the function
                         ticketDisplay = `
                         <div class="ticket-flex">
                             <span class="ticket-num">#${s.ticket_id}</span>
-                            <span class="copy-btn" onclick="copyToClipboard('${s.ticket_id}')" title="Copy to Clipboard">
+                            <span class="copy-btn" onclick="copyToClipboard('${s.ticket_id}', this)" title="Copy to Clipboard">
                                 ${copyIcon}
                             </span>
                         </div>`;
