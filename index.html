@@ -1,10 +1,285 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayBox Insights - Modern</title>
+    <!-- ייבוא פונט Heebo - פונט נקי ומודרני שמתאים מאוד למצגות בעברית -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- אייקונים -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --brand-blue: #0066FF;      /* הצבע המזוהה */
+            --dark-text: #1A2B45;       /* כחול כהה מאוד לטקסט */
+            --gray-text: #58687E;       /* אפור לטקסט משני */
+            --bg-gradient: linear-gradient(135deg, #f5f9ff 0%, #e6f0ff 100%);
+            --card-shadow: 0 20px 60px rgba(0, 40, 100, 0.08);
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: var(--bg-gradient);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--dark-text);
+            box-sizing: border-box;
+        }
+
+        .slide-card {
+            background-color: white;
+            width: 100%;
+            max-width: 1100px;
+            /* גובה מינימלי למראה של שקף */
+            min-height: 600px;
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            padding: 50px 70px;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* פס קישוט עדין בצד ימין */
+        .slide-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 6px;
+            background: var(--brand-blue);
+        }
+
+        header {
+            margin-bottom: 40px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--dark-text);
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--brand-blue);
+            font-weight: 500;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .points-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* שתי עמודות למראה מאוורר */
+            column-gap: 60px;
+            row-gap: 35px;
+        }
+
+        .point-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .icon-box {
+            background-color: #F0F6FF;
+            color: var(--brand-blue);
+            min-width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-top: 2px; /* יישור אופטי עם הטקסט */
+        }
+
+        .text-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .point-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 6px;
+        }
+
+        .point-desc {
+            font-size: 1rem;
+            color: var(--gray-text);
+            line-height: 1.5;
+            font-weight: 300;
+        }
+
+        /* אפשרות להדגשה עתידית אם תרצה להחזיר */
+        .highlight-item .icon-box {
+            background-color: var(--brand-blue);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 102, 255, 0.3);
+        }
+
+        .highlight-item .point-title {
+            color: var(--brand-blue);
+        }
+
+        .logo-placeholder {
+            position: absolute;
+            bottom: 20px;
+            left: 40px;
+            font-size: 0.9rem;
+            color: #ccc;
+            font-weight: 500;
+        }
+
+        /* התאמה לנייד אם צריך */
+        @media (max-width: 768px) {
+            .points-grid {
+                grid-template-columns: 1fr;
+            }
+            .slide-card {
+                padding: 30px;
+                height: auto;
+            }
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-$END$
+
+    <div class="slide-card">
+        <header>
+            <div>
+                <h1>תובנות מהקמת מערך שירות</h1>
+                <div class="subtitle">PayBox Case Study</div>
+            </div>
+            <!-- אייקון כללי לנושא -->
+            <i class="fas fa-chart-line" style="font-size: 2rem; color: #e1e8f0;"></i>
+        </header>
+
+        <div class="points-grid">
+
+            <!-- נקודה 1 -->
+            <div class="point-item">
+                <div class="icon-box"><i class="fas fa-plug"></i></div>
+                <div class="text-content">
+                    <div class="point-title">אינטגרציה ללא פשרות</div>
+                    <div class="point-desc">בחירת מערכת (Zendesk) לפי יכולות API וחיבור עמוק לליבה, לא רק לפי ה-UI.</div>
+                </div>
+            </div>
+
+            <!-- נקודה 2 -->
+            <div class="point-item">
+                <div class="icon-box"><i class="fas fa-database"></i></div>
+                <div class="text-content">
+                    <div class="point-title">הדאטה הוא המנוע</div>
+                    <div class="point-desc">מיפוי שדות מקדים הוא קריטי. חסר שדה = אין אוטומציה. זה הבסיס להכל.</div>
+                </div>
+            </div>
+
+            <!-- נקודה 3 -->
+            <div class="point-item">
+                <div class="icon-box"><i class="fas fa-shield-alt"></i></div>
+                <div class="text-content">
+                    <div class="point-title">אבטחה ושרידות</div>
+                    <div class="point-desc">גיבוי נתונים עצמאי ואבטחת מידע כערך עליון בפינטק (Security by Design).</div>
+                </div>
+            </div>
+
+            <!-- נקודה 4 -->
+            <div class="point-item">
+                <div class="icon-box"><i class="fas fa-comment-dots"></i></div>
+                <div class="text-content">
+                    <div class="point-title">Text First Strategy</div>
+                    <div class="point-desc">העדפה מוחלטת למענה כתוב על פני טלפוני (יעילות, תיעוד, ריבוי שיחות).</div>
+                </div>
+            </div>
+
+            <!-- נקודה 5 -->
+            <div class="point-item">
+                <div class="icon-box"><i class="fas fa-stopwatch"></i></div>
+                <div class="text-content">
+                    <div class="point-title">ניהול זמן לקוח</div>
+                    <div class="point-desc">איזון בין מענה סינכרוני (Live) לא-סינכרוני לוויסות עומסים.</div>
+                </div>
+            </div>
+
+            <!-- נקודה 6 -->
+            <div class="point-item">
+                <div class="icon-box"><i class="fas fa-sync-alt"></i></div>
+                <div class="text-content">
+                    <div class="point-title">השירות כראי למוצר</div>
+                    <div class="point-desc">שימוש בנתוני השירות (Data Driven) לזיהוי כשלי UX ושיפור האפליקציה.</div>
+                </div>
+            </div>
+
+            <!-- נקודה 7 -->
+            <div class="point-item">
+                <div class="icon-box"><i class="fas fa-robot"></i></div>
+                <div class="text-content">
+                    <div class="point-title">אוטומציה ומניעה</div>
+                    <div class="point-desc">הטיקט הכי טוב הוא זה שלא נפתח. השקעה ב-Self Service כדי להתמודד עם Scale.</div>
+                </div>
+            </div>
+
+            <!-- נקודה 8 -->
+            <div class="point-item">
+                <div class="icon-box"><i class="fas fa-users"></i></div>
+                <div class="text-content">
+                    <div class="point-title">הגורם האנושי</div>
+                    <div class="point-desc">כשמדובר בכסף, הרגש משחק תפקיד. הכשרת נציגים לאמפתיה והכלת לחץ.</div>
+                </div>
+            </div>
+
+            <!-- נקודה 9 -->
+            <div class="point-item">
+                <div class="icon-box"><i class="fas fa-bullhorn"></i></div>
+                <div class="text-content">
+                    <div class="point-title">הלקוח כ-QA</div>
+                    <div class="point-desc">הלקוחות יציפו פערים ובאגים שפספסתם. בנו תהליך קצר ויעיל להעברת התובנות לתיקון.</div>
+                </div>
+            </div>
+
+            <!-- נקודה 10: חדשה - AI -->
+            <div class="point-item">
+                <div class="icon-box"><i class="fas fa-brain"></i></div>
+                <div class="text-content">
+                    <div class="point-title">AI: סנטימנט ו-Intent</div>
+                    <div class="point-desc">זיהוי סנטימנט להצפה למנהל, ובניית תהליכים אוטומטיים לפי כוונת הלקוח.</div>
+                </div>
+            </div>
+
+            <!-- נקודה 11: חדשה - טפסים -->
+            <div class="point-item">
+                <div class="icon-box"><i class="fas fa-clipboard-check"></i></div>
+                <div class="text-content">
+                    <div class="point-title">טפסים מובנים (Structured)</div>
+                    <div class="point-desc">עבודה עם טפסים מוגדרים מראש תחסוך כאב ראש. מבנה קבוע = דאטה מסודר וטיפול מהיר.</div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
 </body>
 </html>
