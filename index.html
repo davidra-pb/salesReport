@@ -70,16 +70,17 @@
 
             .detail-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 
-            /* --- FIXED HEADER STYLE --- */
+            /* --- FIXED HEADER STYLE (SOLID BACKGROUND) --- */
             .detail-table th { 
-                background: #252f45; /* Matches modal header/dark theme */
+                background-color: var(--card-bg); /* Solid background to hide scrolling content */
                 color: #ccc; 
-                padding: 10px; 
+                padding: 12px; 
                 text-align: left; 
                 position: sticky; 
                 top: 0; 
-                z-index: 10; 
-                box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+                z-index: 50; /* Ensure it stays on top */
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Stronger shadow separator */
+                border-bottom: 1px solid #334155;
             }
 
             .detail-table td { padding: 10px; border-bottom: 1px solid #334155; }
@@ -144,7 +145,7 @@
             </table>
         </div>
 
-        <div class="footer">Generated on 28/01/2026 18:46 | Source: Sales_Report_20260128_1610.xlsx</div>
+        <div class="footer">Generated on 28/01/2026 18:48 | Source: Sales_Report_20260128_1610.xlsx</div>
 
         <div id="detailModal" class="modal">
             <div class="modal-content">
@@ -313,6 +314,7 @@
                           <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
                         </svg>`;
 
+                        // Pass 'this' to the function
                         ticketDisplay = `
                         <div class="ticket-flex">
                             <span class="ticket-num">#${s.ticket_id}</span>
