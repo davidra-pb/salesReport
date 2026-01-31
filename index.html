@@ -32,46 +32,47 @@
                 z-index: 1000;
                 background-color: var(--bg);
                 padding-bottom: 10px;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
+                box-shadow: 0 10px 20px rgba(0,0,0,0.5); /* Stronger Shadow */
                 margin-top: -20px; 
                 padding-top: 20px;
+                margin-bottom: 20px;
             }
 
-            .header { text-align: center; margin-bottom: 20px; }
-            h1 { font-weight: 900; font-size: 2.5rem; margin: 0; background: linear-gradient(90deg, var(--brand-blue), var(--brand-young)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            .header { text-align: center; margin-bottom: 15px; }
+            h1 { font-weight: 900; font-size: 2.2rem; margin: 0; background: linear-gradient(90deg, var(--brand-blue), var(--brand-young)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
             .subtitle { color: var(--text-muted); font-size: 1rem; margin-top: 5px; display: flex; justify-content: center; align-items: center; gap: 15px; }
 
-            .clock { font-size: 1.8rem; font-weight: 900; color: var(--gold); text-shadow: 0 0 10px rgba(251, 191, 36, 0.4); font-family: 'Courier New', monospace; letter-spacing: 2px; }
+            .clock { font-size: 1.5rem; font-weight: 900; color: var(--gold); text-shadow: 0 0 10px rgba(251, 191, 36, 0.4); font-family: 'Courier New', monospace; letter-spacing: 1px; }
 
             .controls-row { 
-                background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #334151;
-                display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;
+                background: var(--card); padding: 10px 20px; border-radius: 12px; border: 1px solid #334151;
+                display: flex; justify-content: space-between; align-items: center; 
                 box-shadow: 0 4px 6px rgba(0,0,0,0.2);
             }
-            .filters { display: flex; gap: 10px; flex-wrap: wrap; }
+            .filters { display: flex; gap: 8px; flex-wrap: wrap; }
             .filter-pill { 
-                background: #0f172a; color: #ccc; padding: 8px 16px; border-radius: 20px; 
-                cursor: pointer; font-size: 0.9rem; user-select: none; transition: 0.2s; border: 1px solid #334151;
+                background: #0f172a; color: #ccc; padding: 6px 12px; border-radius: 20px; 
+                cursor: pointer; font-size: 0.85rem; user-select: none; transition: 0.2s; border: 1px solid #334151;
             }
             .filter-pill.active { background: var(--success); color: white; border-color: var(--success); box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
 
             .month-select { 
-                background: #0f172a; color: white; border: 1px solid #334151; padding: 8px 16px; border-radius: 8px; font-family: inherit; font-weight: bold; cursor: pointer; font-size: 1rem;
+                background: #0f172a; color: white; border: 1px solid #334151; padding: 6px 12px; border-radius: 8px; font-family: inherit; font-weight: bold; cursor: pointer; font-size: 0.9rem;
             }
 
-            .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; margin-top: 25px; }
+            .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; }
             .tab-btn { background: var(--card); border: 1px solid #334151; color: var(--text-muted); padding: 10px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
             .tab-btn.active { background: var(--brand-blue); color: white; border-color: var(--brand-blue); box-shadow: 0 0 15px rgba(46, 167, 235, 0.4); }
             .tab-content { display: none; animation: fadeIn 0.4s; }
             .tab-content.active { display: block; }
 
-            table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; margin-bottom: 30px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+            table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); border-radius: 12px; overflow: hidden; margin-bottom: 30px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
 
             th { 
                 background: #0f172a; color: var(--text-muted); padding: 16px; text-align: right; 
                 font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; 
-                position: sticky; z-index: 500;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+                position: sticky; top: 0; z-index: 500;
+                border-bottom: 2px solid #334151;
             }
             td { padding: 14px 16px; border-bottom: 1px solid #334151; vertical-align: middle; font-size: 0.95rem; }
             tr:hover { background: #2d3748; }
@@ -237,7 +238,8 @@
             initMonthFilter();
             initFilters();
             updateAllViews(); 
-            adjustTableStickyHeader(); 
+            // Wait a bit for layout to settle before calculating sticky header
+            setTimeout(adjustTableStickyHeader, 100);
             document.addEventListener('keydown', (e) => { if(e.key === "Escape") closeModal(); });
             window.addEventListener('resize', adjustTableStickyHeader);
         });
@@ -255,9 +257,12 @@
 
         // --- DYNAMIC STICKY TABLE HEADER ---
         function adjustTableStickyHeader() {
-            const headerHeight = document.getElementById('stickyHeader').offsetHeight;
-            const ths = document.querySelectorAll('th');
-            ths.forEach(th => th.style.top = (headerHeight + 20) + 'px'); // Add buffer
+            const header = document.getElementById('stickyHeader');
+            if(header) {
+                const headerHeight = header.offsetHeight;
+                const ths = document.querySelectorAll('th');
+                ths.forEach(th => th.style.top = (headerHeight) + 'px');
+            }
         }
 
         function setTab(id) {
@@ -361,7 +366,7 @@
             agentsList.forEach((a, idx) => {
                 const tr = document.createElement('tr');
                 const canvasId = `spark_${idx}`;
-
+                const arrowColor = a.trend_arrow === '⬆️' ? 'var(--success)' : 'var(--danger)';
                 const valYest = isCurrent ? a.yest : '-';
                 const valWtd = isCurrent ? a.wtd : '-';
                 const valFc = isCurrent ? a.forecast : '-';
@@ -479,7 +484,7 @@
                     datasets: [{ 
                         data: data, 
                         borderColor: color, 
-                        backgroundColor: color + '33', // Add transparency for fill (Hex + 33 = ~20% alpha)
+                        backgroundColor: color + '33', 
                         borderWidth: 2, 
                         pointRadius: 1, 
                         pointBackgroundColor: color,
