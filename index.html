@@ -21,6 +21,9 @@
                 --warning: #f59e0b; 
                 --danger: #ef4444;
                 --gold: #fbbf24;
+
+                /* Dynamic Header Offset Variable */
+                --header-offset: 180px; 
             }
             body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
             .container { max-width: 1300px; margin: 0 auto; }
@@ -71,8 +74,14 @@
             th { 
                 background: #0f172a; color: var(--text-muted); padding: 16px; text-align: right; 
                 font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; 
-                position: sticky; top: 0; z-index: 500;
+
+                /* DYNAMIC STICKY LOGIC */
+                position: sticky; 
+                top: var(--header-offset); /* JS updates this variable */
+                z-index: 500;
+
                 border-bottom: 2px solid #334151;
+                box-shadow: 0 4px 5px rgba(0,0,0,0.3);
             }
             td { padding: 14px 16px; border-bottom: 1px solid #334151; vertical-align: middle; font-size: 0.95rem; }
             tr:hover { background: #2d3748; }
@@ -86,7 +95,7 @@
             .trend-wrapper { display: flex; align-items: center; justify-content: center; gap: 8px; }
             .trend-arrow { font-size: 1.2rem; }
             .trend-diff { font-weight: bold; font-size: 0.9rem; font-family: monospace; }
-            .mini-chart { width: 100px; height: 40px; display: inline-block; }
+            .mini-chart { width: 100px; height: 40px; display: inline-block; vertical-align: middle; }
 
             .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
             .stat-card { background: var(--card); padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #334151; }
@@ -237,11 +246,19 @@
             initClock();
             initMonthFilter();
             initFilters();
+
+            // --- Live Sticky Offset Calculation ---
+            const stickyHeader = document.getElementById('stickyHeader');
+            const observer = new ResizeObserver(entries => {
+                for (let entry of entries) {
+                    // Update CSS Variable with current height
+                    document.documentElement.style.setProperty('--header-offset', entry.target.offsetHeight + 'px');
+                }
+            });
+            observer.observe(stickyHeader);
+
             updateAllViews(); 
-            // Wait a bit for layout to settle before calculating sticky header
-            setTimeout(adjustTableStickyHeader, 100);
             document.addEventListener('keydown', (e) => { if(e.key === "Escape") closeModal(); });
-            window.addEventListener('resize', adjustTableStickyHeader);
         });
 
         // --- CLOCK ---
@@ -253,16 +270,6 @@
             }
             update();
             setInterval(update, 1000);
-        }
-
-        // --- DYNAMIC STICKY TABLE HEADER ---
-        function adjustTableStickyHeader() {
-            const header = document.getElementById('stickyHeader');
-            if(header) {
-                const headerHeight = header.offsetHeight;
-                const ths = document.querySelectorAll('th');
-                ths.forEach(th => th.style.top = (headerHeight) + 'px');
-            }
         }
 
         function setTab(id) {
