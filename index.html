@@ -22,10 +22,9 @@
                 --danger: #ef4444;
                 --gold: #fbbf24;
 
-                /* Dynamic Header Offset Variable */
-                --header-offset: 180px; 
+                --header-height: 180px; /* Init value */
             }
-            body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+            body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; padding-top: 0; }
             .container { max-width: 1300px; margin: 0 auto; }
 
             /* STICKY HEADER WRAPPER */
@@ -34,11 +33,10 @@
                 top: 0;
                 z-index: 1000;
                 background-color: var(--bg);
-                padding-bottom: 10px;
-                box-shadow: 0 10px 20px rgba(0,0,0,0.5); /* Stronger Shadow */
-                margin-top: -20px; 
                 padding-top: 20px;
+                padding-bottom: 10px;
                 margin-bottom: 20px;
+                box-shadow: 0 15px 15px -5px rgba(0,0,0,0.4);
             }
 
             .header { text-align: center; margin-bottom: 15px; }
@@ -69,21 +67,39 @@
             .tab-content { display: none; animation: fadeIn 0.4s; }
             .tab-content.active { display: block; }
 
-            table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); border-radius: 12px; overflow: hidden; margin-bottom: 30px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+            /* IMPORTANT: Separate border-collapse for sticky header to work properly */
+            table { 
+                width: 100%; 
+                border-collapse: separate; 
+                border-spacing: 0; 
+                background: var(--card); 
+                border-radius: 12px; 
+                margin-bottom: 30px; 
+                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); 
+            }
 
             th { 
-                background: #0f172a; color: var(--text-muted); padding: 16px; text-align: right; 
-                font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; 
+                background-color: #1e293b; /* Must be solid color */
+                color: var(--text-muted); 
+                padding: 16px; 
+                text-align: right; 
+                font-size: 0.85rem; 
+                text-transform: uppercase; 
+                letter-spacing: 0.05em; 
 
-                /* DYNAMIC STICKY LOGIC */
+                /* Sticky Magic */
                 position: sticky; 
-                top: var(--header-offset); /* JS updates this variable */
+                top: var(--header-height);
                 z-index: 500;
 
                 border-bottom: 2px solid #334151;
-                box-shadow: 0 4px 5px rgba(0,0,0,0.3);
             }
+            /* Fix top radius for first and last th */
+            th:first-child { border-top-right-radius: 12px; }
+            th:last-child { border-top-left-radius: 12px; }
+
             td { padding: 14px 16px; border-bottom: 1px solid #334151; vertical-align: middle; font-size: 0.95rem; }
+            tr:last-child td { border-bottom: none; }
             tr:hover { background: #2d3748; }
 
             .agent-name { font-weight: 700; font-size: 1.05rem; }
@@ -252,7 +268,8 @@
             const observer = new ResizeObserver(entries => {
                 for (let entry of entries) {
                     // Update CSS Variable with current height
-                    document.documentElement.style.setProperty('--header-offset', entry.target.offsetHeight + 'px');
+                    const h = entry.target.offsetHeight;
+                    document.documentElement.style.setProperty('--header-height', (h + 10) + 'px');
                 }
             });
             observer.observe(stickyHeader);
